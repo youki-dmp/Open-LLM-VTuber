@@ -198,6 +198,15 @@ class TTSFactory:
                 volume=kwargs.get("volume", 1.0),
                 speed=kwargs.get("speed", 1.0),
             )
+        elif engine_type == "voicevox_tts":
+            from .voicevox_tts import TTSEngine as VoicevoxTTSEngine
+
+            return VoicevoxTTSEngine(
+                engine_url=kwargs.get("engine_url", "http://127.0.0.1:50021"),
+                speaker_name=kwargs.get("speaker_name", "冥鳴ひまり"),
+                style_name=kwargs.get("style_name", "ノーマル"),
+                speed_scale=kwargs.get("speed_scale", 1.0),
+            )
         elif engine_type == "piper_tts":
             from .piper_tts import TTSEngine as PiperTTSEngine
 

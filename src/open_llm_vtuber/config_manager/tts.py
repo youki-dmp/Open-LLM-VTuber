@@ -680,6 +680,31 @@ class CartesiaTTSConfig(I18nMixin):
     }
 
 
+class VoicevoxTTSConfig(I18nMixin):
+    """Configuration for VOICEVOX TTS (local VOICEVOX ENGINE)."""
+
+    engine_url: str = Field("http://127.0.0.1:50021", alias="engine_url")
+    speaker_name: str = Field("冥鳴ひまり", alias="speaker_name")
+    style_name: str = Field("ノーマル", alias="style_name")
+    speed_scale: float = Field(1.0, alias="speed_scale")
+
+    DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
+        "engine_url": Description(
+            en="URL of the local VOICEVOX ENGINE (run it separately first)",
+            zh="本地 VOICEVOX ENGINE 的 URL（需要先单独启动）",
+        ),
+        "speaker_name": Description(
+            en="VOICEVOX character name (see GET /speakers on the engine)",
+            zh="VOICEVOX 角色名称（参见引擎的 GET /speakers）",
+        ),
+        "style_name": Description(
+            en="VOICEVOX voice style name for the chosen character",
+            zh="所选角色的 VOICEVOX 语音风格名称",
+        ),
+        "speed_scale": Description(en="Speech speed multiplier", zh="语速倍数"),
+    }
+
+
 class TTSConfig(I18nMixin):
     """Configuration for Text-to-Speech."""
 
@@ -702,6 +727,7 @@ class TTSConfig(I18nMixin):
         "elevenlabs_tts",
         "cartesia_tts",
         "piper_tts",
+        "voicevox_tts",
     ] = Field(..., alias="tts_model")
 
     azure_tts: Optional[AzureTTSConfig] = Field(None, alias="azure_tts")
@@ -726,6 +752,7 @@ class TTSConfig(I18nMixin):
     elevenlabs_tts: ElevenLabsTTSConfig | None = Field(None, alias="elevenlabs_tts")
     cartesia_tts: CartesiaTTSConfig | None = Field(None, alias="cartesia_tts")
     piper_tts: Optional[PiperTTSConfig] = Field(None, alias="piper_tts")
+    voicevox_tts: Optional[VoicevoxTTSConfig] = Field(None, alias="voicevox_tts")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
         "tts_model": Description(
@@ -769,6 +796,9 @@ class TTSConfig(I18nMixin):
             en="Configuration for Cartesia TTS", zh="Cartesia TTS 配置"
         ),
         "piper_tts": Description(en="Configuration for Piper TTS", zh="Piper TTS 配置"),
+        "voicevox_tts": Description(
+            en="Configuration for VOICEVOX TTS", zh="VOICEVOX TTS 配置"
+        ),
     }
 
     @model_validator(mode="after")
@@ -813,4 +843,6 @@ class TTSConfig(I18nMixin):
 
         elif tts_model == "piper_tts" and values.piper_tts is not None:
             values.piper_tts.model_validate(values.piper_tts.model_dump())
+        elif tts_model == "voicevox_tts" and values.voicevox_tts is not None:
+            values.voicevox_tts.model_validate(values.voicevox_tts.model_dump())
         return values
